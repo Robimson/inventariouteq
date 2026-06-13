@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>UTEQ - Gestión de Software</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    :root { --uteq-green: #004a2f; --uteq-yellow: #ffcc00; }
+    body { background-color: #f4f7f6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    .navbar { background-color: var(--uteq-green); border-bottom: 4px solid var(--uteq-yellow); color: white; }
+    .card { border: none; border-radius: 12px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+    .btn-uteq { background-color: var(--uteq-green); color: white; border: none; }
+    .btn-uteq:hover { background-color: #003320; color: white; }
+    .table thead { background-color: var(--uteq-green); color: white; }
+  </style>
+</head>
+<body>
+
+<nav class="navbar mb-5">
+  <div class="container py-2">
+    <span class="navbar-brand mb-0 h1">🎓 UTEQ - Ingeniería en Software</span>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="row g-4">
+    <!-- FORMULARIO -->
+    <div class="col-lg-4">
+      <div class="card p-4">
+        <h5 class="mb-4 text-center" th:text="${prod.id == null ? '➕ Agregar Producto' : '✏️ Editar Producto'}"></h5>
+        <form th:action="@{/guardar}" th:object="${prod}" method="post">
+          <input type="hidden" th:field="*{id}">
+          <div class="mb-3">
+            <label class="form-label fw-bold">Nombre del Producto</label>
+            <input type="text" th:field="*{nombre}" class="form-control" placeholder="Ej: Mouse" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold">Descripción</label>
+            <textarea th:field="*{descripcion}" class="form-control" rows="2"></textarea>
+          </div>
+          <div class="row">
+            <div class="col-6 mb-3">
+              <label class="form-label fw-bold">Precio ($)</label>
+              <input type="number" step="0.01" th:field="*{precio}" class="form-control" required>
+            </div>
+            <div class="col-6 mb-3">
+              <label class="form-label fw-bold">Stock</label>
+              <input type="number" th:field="*{stock}" class="form-control" required>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-uteq w-100 py-2 fw-bold">PROCESAR</button>
+          <a th:if="${prod.id != null}" href="/" class="btn btn-light w-100 mt-2 text-muted">Cancelar edición</a>
+        </form>
+      </div>
+    </div>
+
+    <!-- TABLA -->
+    <div class="col-lg-8">
+      <div class="card p-4">
+        <h5 class="mb-4">📋 Inventario de Software</h5>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Precio</th>
+              <th>Stock</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="p : ${lista}">
+              <td th:text="${p.id}" class="text-muted small"></td>
+              <td>
+                <strong th:text="${p.nombre}"></strong><br>
+                <small class="text-muted" th:text="${p.descripcion}"></small>
+              </td>
+              <td th:text="'$' + ${p.precio}"></td>
+              <td>
+                                    <span th:class="${p.stock < 10 ? 'badge bg-danger' : 'badge bg-success'}"
+                                          th:text="${p.stock}"></span>
+              </td>
+              <td class="text-center">
+                <div class="btn-group">
+                  <a th:href="@{'/editar/' + ${p.id}}" class="btn btn-sm btn-outline-warning">Editar</a>
+                  <a th:href="@{'/eliminar/' + ${p.id}}" class="btn btn-sm btn-outline-danger"
+                     onclick="return confirm('¿Seguro?')">X</a>
+                </div>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
